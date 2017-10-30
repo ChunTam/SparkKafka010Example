@@ -1,4 +1,4 @@
-1. Before compiling/running this project, please visit obtain the spark kafka010 connector jar:
+1. Before compiling/running this project, please visit and obtain the spark kafka010 connector jar:
 
 https://github.com/hortonworks-spark/skc
 
