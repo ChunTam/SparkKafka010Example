@@ -49,34 +49,35 @@ KafkaClient {
 
 To create kafka topic:
 
-Folowing article:
+Refer to the HCC article:
 
 https://community.hortonworks.com/articles/79923/step-by-step-recipe-for-securing-kafka-with-kerber.html
 
 
 1) cd /usr/hdp/current/kafka-broker/bin
-# create the topic
+
+##### create the topic
 2) ./kafka-topics.sh --zookeeper sparkb1.sec.support.com:2181,sparkb2.sec.support.com:2181,sparkb4.sec.support.com:2181 --create --topic kafka010 --partitions 1 --replication-factor 2
 
-# provide producer permission
+##### provide producer permission
 3) ./kafka-acls.sh --authorizer-properties sparkb1.sec.support.com:2181,sparkb2.sec.support.com:2181,sparkb4.sec.support.com:2181 --add --allow-principal User:spark-sparkb --producer --topic kafka010
 
-# proivde consumer permission
+##### provide consumer permission
 4) ./kafka-acls.sh --authorizer-properties zookeeper.connect=sparkb1.sec.support.com:2181,sparkb2.sec.support.com:2181,sparkb4.sec.support.com:2181 --add --allow-principal User:spark-sparkb --consumer --topic kafka010
 
-# confirm the above ACL is there
+##### confirm the above ACL is there
 5) ./kafka-acls.sh  --list --authorizer-properties zookeeper.connect=sparkb1.sec.support.com:2181,sparkb2.sec.support.com:2181,sparkb4.sec.support.com:2181
 
-#confirm you can produce as spark user
+#####confirm you can produce as spark user
 5) ./kafka-console-producer.sh --broker-list sparkb2.sec.support.com:6667,sparkb4.sec.support.com:6667,sparkb5.sec.support.com:6667 --topic kafka010 --security-protocol PLAINTEXTSASL
 
-#confirm you can consumer as spark user. Note protocol has to be PLAINTEXTSASL instead of
+#####confirm you can consumer as spark user. Note protocol has to be PLAINTEXTSASL instead of
 6) ./kafka-console-consumer.sh --zookeeper sparkb1.sec.support.com:2181,sparkb2.sec.support.com:2181,sparkb4.sec.support.com:2181 --topic kafka010 --security-protocol PLAINTEXTSASL
 
-#submit the spark job
+#####submit the spark job
 7)  spark-submit --master yarn-cluster --jars spark-kafka-0-10-connector-assembly_2.10-1.0.0.jar --files /etc/security/keytabs/spark.headless.keytab,./kafka.jaas --driver-java-options "-Djava.security.auth.login.config=./kafka.jaas" --conf "spark.executor.extraJavaOptions=-Djava.security.auth.login.config=./kafka.jaas" --class Kafka010ConnectorExample.Connector Example-1.0.jar sparkb2.sec.support.com:6667,sparkb4.sec.support.com:6667,sparkb5.sec.support.com:6667 kafka010 group1 SASL_PLAINTEXT
 
-As this by default read from the latest offset, you can use the console producer to provide some input. Or, you can change the offset to begining:
+As this by default read from the latest offset, you can use the console producer to provide some input. Or, you can change the offset to from the begining:
 
 https://spark.apache.org/docs/1.6.1/streaming-kafka-integration.html
 
