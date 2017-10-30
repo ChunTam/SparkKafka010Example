@@ -10,11 +10,7 @@ For example:
 
 mvn install:install-file -Dfile=/Users/ctam/Desktop/spark-streaming-kafka-0-10-connector-master/kafka-0-10-assembly/target/spark-kafka-0-10-connector-assembly_2.10-1.0.0.jar -DgroupId=com.hortonworks -DartifactId=spark-kafka-0-10-connector_2.10 -Dversion=1.0.0 -Dpackaging=jar
 
-3. Compile this jar:
-
-mvn clean pacakge
-
-4. To connect to a secured Kafka Cluster, please go through the instruction first :
+3. To connect to a secured Kafka Cluster, please go through the instruction first :
 
 https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.6.2/bk_spark-component-guide/content/using-spark-streaming.html#spark-streaming-jar
 
@@ -23,6 +19,10 @@ To conclude, in order to talk to a secured Kafka cluster you need:
 -) In your job, pass in "security.protocol" configuration as either "SASL_PLAINTEXT"
 -) A valid jaas file
 -) The keytab file that matches the location name in the jaas file
+-)Spark-submit command should have the following:
+  --files <your jass file>, <your keytab>
+  --driver-java-options "-Djava.security.auth.login.config=./<jass file>" \       ## Please note that this is using the current directory ./
+  --conf "spark.executor.extraJavaOptions=-Djava.security.auth.login.config=./key.conf"  ##current directory same as above
 
 An sample jaas file:
 
@@ -38,17 +38,9 @@ KafkaClient {
 
 
 
-5. To build this project use
+4. To build this project use
 
     mvn package
-
-6. Spark submit should conclude the following:
-
--) --files <your jass file>, <your keytab>
--) --driver-java-options "-Djava.security.auth.login.config=./<jass file>" \       ## Please note that this is using the current directory ./
--) --conf "spark.executor.extraJavaOptions=-Djava.security.auth.login.config=./key.conf"  ##current directory same as above
-
-
 
 
 To create kafka topic:
@@ -78,7 +70,7 @@ https://community.hortonworks.com/articles/79923/step-by-step-recipe-for-securin
 #####confirm you can consumer as spark user. Note protocol has to be PLAINTEXTSASL instead of
 6) ./kafka-console-consumer.sh --zookeeper sparkb1.sec.support.com:2181,sparkb2.sec.support.com:2181,sparkb4.sec.support.com:2181 --topic kafka010 --security-protocol PLAINTEXTSASL
 
-To submit the spark job:
+To submit the spark job
 
 spark-submit --master yarn-cluster --jars <location of your spark kafk010 connector jar>  --files <location of keytab>,<location of your jass file> --driver-java-options "-Djava.security.auth.login.config=./<jass file name>" --conf "spark.executor.extraJavaOptions=-Djava.security.auth.login.config=./<jaas file name>" --class Kafka010ConnectorExample.Connector <application jar location> <broker list> <topic> <groupId> <security protocol>
 
