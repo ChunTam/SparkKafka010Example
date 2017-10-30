@@ -74,11 +74,24 @@ https://community.hortonworks.com/articles/79923/step-by-step-recipe-for-securin
 #####confirm you can consumer as spark user. Note protocol has to be PLAINTEXTSASL instead of
 6) ./kafka-console-consumer.sh --zookeeper sparkb1.sec.support.com:2181,sparkb2.sec.support.com:2181,sparkb4.sec.support.com:2181 --topic kafka010 --security-protocol PLAINTEXTSASL
 
-#####submit the spark job
-7)  spark-submit --master yarn-cluster --jars spark-kafka-0-10-connector-assembly_2.10-1.0.0.jar --files /etc/security/keytabs/spark.headless.keytab,./kafka.jaas --driver-java-options "-Djava.security.auth.login.config=./kafka.jaas" --conf "spark.executor.extraJavaOptions=-Djava.security.auth.login.config=./kafka.jaas" --class Kafka010ConnectorExample.Connector Example-1.0.jar sparkb2.sec.support.com:6667,sparkb4.sec.support.com:6667,sparkb5.sec.support.com:6667 kafka010 group1 SASL_PLAINTEXT
+To submit the spark job:
+
+spark-submit --master yarn-cluster --jars <location of your spark kafk010 connector jar>  --files <location of keytab>,<location of your jass file> --driver-java-options "-Djava.security.auth.login.config=./<jass file name>" --conf "spark.executor.extraJavaOptions=-Djava.security.auth.login.config=./<jaas file name>" --class Kafka010ConnectorExample.Connector <application jar location> <broker list> <topic> <groupId> <security protocol>
+
+For example:
+
+spark-submit --master yarn-cluster --jars spark-kafka-0-10-connector-assembly_2.10-1.0.0.jar --files /etc/security/keytabs/spark.headless.keytab,./kafka.jaas --driver-java-options "-Djava.security.auth.login.config=./kafka.jaas" --conf "spark.executor.extraJavaOptions=-Djava.security.auth.login.config=./kafka.jaas" --class Kafka010ConnectorExample.Connector Example-1.0.jar sparkb2.sec.support.com:6667,sparkb4.sec.support.com:6667,sparkb5.sec.support.com:6667 kafka010 group1 SASL_PLAINTEXT
 
 As this by default read from the latest offset, you can use the console producer to provide some input. Or, you can change the offset to from the begining:
 
 https://spark.apache.org/docs/1.6.1/streaming-kafka-integration.html
+
+
+##########
+You may notice in the above example, the jaas file and the keyfile location are set to current directory in the jaas and java opt.
+This is because in yarn mode, files are distributed to yarn container local dir. For example /data01/yarn/localdir.
+In this case, if you put a absolute path "/home/me/xxx.jaas file", you would either get a "no such file", as this file does not exist on
+the ndoemanager that runs the container, or you would have to make sure all nodemanager has /home/me/xxx.jaas file. Same goes to other
+files like ssl trustore
 
 
