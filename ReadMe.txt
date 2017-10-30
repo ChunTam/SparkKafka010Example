@@ -10,11 +10,15 @@ For example:
 
 mvn install:install-file -Dfile=/Users/ctam/Desktop/spark-streaming-kafka-0-10-connector-master/kafka-0-10-assembly/target/spark-kafka-0-10-connector-assembly_2.10-1.0.0.jar -DgroupId=com.hortonworks -DartifactId=spark-kafka-0-10-connector_2.10 -Dversion=1.0.0 -Dpackaging=jar
 
-3. To connect to a secured Kafka Cluster, please go through the instruction first :
+3. Compile this jar:
+
+mvn clean pacakge
+
+4. To connect to a secured Kafka Cluster, please go through the instruction first :
 
 https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.6.2/bk_spark-component-guide/content/using-spark-streaming.html#spark-streaming-jar
 
-4. To conclude, in order to talk to a secured Kafka cluster you need:
+To conclude, in order to talk to a secured Kafka cluster you need:
 
 -) In your job, pass in "security.protocol" configuration as either "SASL_PLAINTEXT"
 -) A valid jaas file
