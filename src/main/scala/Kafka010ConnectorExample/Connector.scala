@@ -22,7 +22,7 @@ object Connector {
       println(s"Talking to Kafka host ${args(0)}, to topic ${args(1)} every ${args(2)} second with groupid ${args(3)}")
     }
 
-    val conf = new SparkConf().setAppName("KafkaToHive").setMaster("local[2]")
+    val conf = new SparkConf().setAppName("KafkaToHive")
     val sc = new SparkContext(conf)
     val ssc = new StreamingContext(sc, Seconds(args(2).toInt))
 
